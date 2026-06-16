@@ -4,36 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Encuesta PASOS UANDES 2026 — Dashboard</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js">
-// ── Global tooltip (follows cursor, works through overflow:hidden) ────────────
-(function(){
-  const tip = document.getElementById('gtip');
-  function show(el, e) {
-    const parts = el.dataset.tip.split('|');
-    tip.innerHTML = '<b>' + parts[0] + '</b><br>' + parts[1] + '% (n=' + parts[2] + ')';
-    tip.style.display = 'block';
-    move(e);
-  }
-  function move(e) {
-    tip.style.left = e.clientX + 'px';
-    tip.style.top  = (e.clientY - tip.offsetHeight - 12) + 'px';
-    tip.style.transform = 'translateX(-50%)';
-  }
-  function hide(e) {
-    const el = e.target.closest('[data-tip]');
-    if (el && !el.contains(e.relatedTarget)) tip.style.display = 'none';
-  }
-  document.addEventListener('mouseover', e => {
-    const el = e.target.closest('[data-tip]');
-    if (el) show(el, e);
-  });
-  document.addEventListener('mousemove', e => {
-    if (tip.style.display === 'block') move(e);
-  });
-  document.addEventListener('mouseout', hide);
-})();
-
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -122,19 +93,9 @@ footer{margin-top:3rem;padding-top:1rem;border-top:.5px solid var(--border);font
 .pw-btn:disabled{background:var(--text3);cursor:not-allowed}
 .pw-err{font-size:12px;color:#D8162D;margin-top:.5rem;padding:.35rem .6rem;background:#FEF2F2;border-radius:var(--radius);display:none;text-align:center}
 
-/* ── Global JS tooltip ──────────────────────────────────────────────────── */
-#gtip{
-  position:fixed;display:none;
-  background:rgba(0,0,0,0.85);color:#fff;
-  font-size:12px;line-height:1.45;
-  padding:6px 10px;border-radius:4px;white-space:nowrap;
-  pointer-events:none;z-index:9999;
-}
-#gtip::after{
-  content:'';position:absolute;top:100%;left:50%;
-  transform:translateX(-50%);
-  border:5px solid transparent;border-top-color:rgba(0,0,0,0.85);
-}
+/* ── Tooltip ──────────────────────────────────────────────────────────────── */
+#gtip{position:fixed;display:none;background:rgba(0,0,0,0.85);color:#fff;font-size:12px;line-height:1.45;padding:6px 10px;border-radius:4px;white-space:nowrap;pointer-events:none;z-index:9999;}
+#gtip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(0,0,0,0.85);}
 </style>
 </head>
 <body>
@@ -584,6 +545,34 @@ function initDashboard() {
   buildDimFilter();
   renderPreguntas();
 }
+
+// ── Tooltip: follows cursor, works through overflow:hidden ───────────────────
+(function(){
+  var tip = document.getElementById('gtip');
+  if (!tip) return;
+  document.addEventListener('mouseover', function(e) {
+    var el = e.target.closest('[data-tip]');
+    if (!el) { tip.style.display='none'; return; }
+    var p = el.dataset.tip.split('|');
+    tip.innerHTML = '<b>' + p[0] + '</b><br>' + p[1] + '% (n=' + p[2] + ')';
+    tip.style.display = 'block';
+    tip.style.left = e.clientX + 'px';
+    tip.style.top  = (e.clientY - 46) + 'px';
+    tip.style.transform = 'translateX(-50%)';
+  });
+  document.addEventListener('mousemove', function(e) {
+    if (tip.style.display === 'block') {
+      tip.style.left = e.clientX + 'px';
+      tip.style.top  = (e.clientY - 46) + 'px';
+    }
+  });
+  document.addEventListener('mouseout', function(e) {
+    if (!e.relatedTarget || !e.relatedTarget.closest || !e.relatedTarget.closest('[data-tip]')) {
+      tip.style.display = 'none';
+    }
+  });
+})();
+
 </script>
 </body>
 </html>
